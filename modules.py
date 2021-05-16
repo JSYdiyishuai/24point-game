@@ -3,19 +3,7 @@ import random
 import pygame
 from solve24 import Solver
 
-'''
-Function:
-	卡片类
-Initial Args:
-	--x: 左上角
-	--y: 右下角
-	--width: 宽
-	--height: 高
-	--text: 文本
-	--font: [字体路径, 字体大小]
-	--font_colors(list): 字体颜色
-	--bg_colors(list): 背景色
-'''
+
 class Card(pygame.sprite.Sprite):
 	def __init__(self, x, y, width, height, text, font, font_colors, bg_colors, attribute, **kwargs):
 		pygame.sprite.Sprite.__init__(self)
@@ -28,7 +16,7 @@ class Card(pygame.sprite.Sprite):
 		self.is_selected = False
 		self.select_order = None
 		self.bg_colors = bg_colors
-	'''画到屏幕上'''
+
 	def draw(self, screen, mouse_pos):
 		pygame.draw.rect(screen, self.bg_colors[1], self.rect, 0)
 		if self.rect.collidepoint(mouse_pos):
@@ -40,11 +28,10 @@ class Card(pygame.sprite.Sprite):
 								  self.rect.y+(self.rect.height-font_size[1])/2))
 
 
-'''按钮类'''
 class Button(Card):
 	def __init__(self, x, y, width, height, text, font, font_colors, bg_colors, attribute):
 		Card.__init__(self, x, y, width, height, text, font, font_colors, bg_colors, attribute)
-	'''根据button function执行响应操作'''
+
 	def do(self, game24_gen, func, sprites_group, objs):
 		if self.attribute == 'NEXT':
 			for obj in objs:
@@ -68,14 +55,13 @@ class Button(Card):
 		return sprites_group
 
 
-'''24点游戏生成器'''
 class game24Generator:
 	def __init__(self):
 		self.info = 'game24Generator'
 		self.answers = []
 		self.numbers_ori = []
 		self.numbers_now = []
-	'''生成器'''
+
 	def generate(self):
 		self.__reset()
 		while True:
@@ -84,26 +70,26 @@ class game24Generator:
 			self.answers = self.__verify()
 			if self.answers:
 				break
-	'''只剩下一个数字时检查是否为24'''
+
 	def check(self):
 		if len(self.numbers_now) == 1 and float(self.numbers_now[0]) == self.target:
 			return True
 		return False
-	'''重置'''
+
 	def __reset(self):
 		self.answers = []
 		self.numbers_ori = []
 		self.numbers_now = []
 		self.target = 24.
 		self.answers_idx = 0
-	'''验证生成的数字是否有答案'''
+
 	def __verify(self):
 		answers = []
 		task = Solver()
 		for item in self.__iter(self.numbers_ori, len(self.numbers_ori)):
 			answers = task.solution(item)
 		return answers
-	'''递归枚举'''
+
 	def __iter(self, items, n):
 		for idx, item in enumerate(items):
 			if n == 1:
@@ -111,7 +97,7 @@ class game24Generator:
 			else:
 				for each in self.__iter(items[:idx]+items[idx+1:], n-1):
 					yield [item] + each
-	'''计算函数'''
+
 	def __func(self, a, b):
 		res = dict()
 		for key1, value1 in a.items():
