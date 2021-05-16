@@ -14,47 +14,29 @@ PALETURQUOISE = (175, 238, 238)
 PAPAYAWHIP = (255, 239, 213)
 CURRENTPATH = os.path.abspath(os.path.dirname(__file__))
 FONTPATH = os.path.join(CURRENTPATH, 'fonts/font.TTF')
-# 数字卡片
-# --数字卡片字体颜色
+
 NUMBERFONT_COLORS = [BLACK, RED]
-# --数字卡片背景颜色
 NUMBERCARD_COLORS = [MISTYROSE, PALETURQUOISE]
-# --数字卡片字体路径与大小
 NUMBERFONT = [FONTPATH, 50]
-# --数字卡片位置
 NUMBERCARD_POSITIONS = [(25, 50, 150, 200), (225, 50, 150, 200), (425, 50, 150, 200), (625, 50, 150, 200)]
-# 运算符卡片
-# --运算符种类
+
 OPREATORS = ['+', '-', '×', '÷']
-# --运算符卡片字体颜色
 OPREATORFONT_COLORS = [BLACK, RED]
-# --运算符卡片背景颜色
 OPERATORCARD_COLORS = [MISTYROSE, PALETURQUOISE]
-# --运算符卡片字体路径与大小
 OPERATORFONT = [FONTPATH, 30]
-# --运算符卡片位置
 OPERATORCARD_POSITIONS = [(230, 300, 50, 50), (330, 300, 50, 50), (430, 300, 50, 50), (530, 300, 50, 50)]
-# 按钮卡片
-# --按钮类型
+
 BUTTONS = ['RESET', 'ANSWERS', 'NEXT']
-# --按钮卡片字体颜色
 BUTTONFONT_COLORS = [BLACK, BLACK]
-# --按钮卡片背景颜色
 BUTTONCARD_COLORS = [MISTYROSE, PALETURQUOISE]
-# --按钮卡片字体路径与大小
 BUTTONFONT = [FONTPATH, 30]
-# --按钮卡片位置
 BUTTONCARD_POSITIONS = [(25, 400, 700/3, 150), (50+700/3, 400, 700/3, 150), (75+1400/3, 400, 700/3, 150)]
-# 屏幕大小
 SCREENSIZE = (800, 600)
-# 卡片类型
 GROUPTYPES = ['NUMBER', 'OPREATOR', 'BUTTON']
 
 
-'''检查控件是否被点击'''
 def checkClicked(group, mouse_pos, group_type='NUMBER'):
 	selected = []
-	# 数字卡片/运算符卡片
 	if group_type == GROUPTYPES[0] or group_type == GROUPTYPES[1]:
 		max_selected = 2 if group_type == GROUPTYPES[0] else 1
 		num_selected = 0
@@ -73,19 +55,14 @@ def checkClicked(group, mouse_pos, group_type='NUMBER'):
 						each.select_order = str(num_selected)
 			if each.is_selected:
 				selected.append(each.attribute)
-	# 按钮卡片
 	elif group_type == GROUPTYPES[2]:
 		for each in group:
 			if each.rect.collidepoint(mouse_pos):
 				each.is_selected = True
 				selected.append(each.attribute)
-	# 抛出异常
-	else:
-		pass
 	return selected
 
 
-'''获取数字精灵组'''
 def getNumberSpritesGroup(numbers):
 	number_sprites_group = pygame.sprite.Group()
 	for idx, number in enumerate(numbers):
@@ -94,7 +71,6 @@ def getNumberSpritesGroup(numbers):
 	return number_sprites_group
 
 
-'''获取运算符精灵组'''
 def getOperatorSpritesGroup(operators):
 	operator_sprites_group = pygame.sprite.Group()
 	for idx, operator in enumerate(operators):
@@ -103,7 +79,6 @@ def getOperatorSpritesGroup(operators):
 	return operator_sprites_group
 
 
-'''获取按钮精灵组'''
 def getButtonSpritesGroup(buttons):
 	button_sprites_group = pygame.sprite.Group()
 	for idx, button in enumerate(buttons):
@@ -112,7 +87,6 @@ def getButtonSpritesGroup(buttons):
 	return button_sprites_group
 
 
-'''计算'''
 def calculate(number1, number2, operator):
 	operator_map = {'+': '+', '-': '-', '×': '*', '÷': '/'}
 	try:
@@ -122,7 +96,6 @@ def calculate(number1, number2, operator):
 		return None
 
 
-'''在屏幕上显示信息'''
 def showInfo(text, screen):
 	rect = pygame.Rect(200, 180, 400, 200)
 	pygame.draw.rect(screen, PAPAYAWHIP, rect)
@@ -133,24 +106,18 @@ def showInfo(text, screen):
 							  rect.y+(rect.height-font_size[1])/2))
 
 
-'''主函数'''
 def main():
-	# 初始化, 导入必要的游戏素材
 	pygame.init()
 	screen = pygame.display.set_mode(SCREENSIZE)
 	pygame.display.set_caption('24 point')
 
-	# 24点游戏生成器
 	game24_gen = game24Generator()
 	game24_gen.generate()
-	# 精灵组
-	# --数字
+
 	number_sprites_group = getNumberSpritesGroup(game24_gen.numbers_now)
-	# --运算符
 	operator_sprites_group = getOperatorSpritesGroup(OPREATORS)
-	# --按钮
 	button_sprites_group = getButtonSpritesGroup(BUTTONS)
-	# 游戏主循环
+
 	clock = pygame.time.Clock()
 	selected_numbers = []
 	selected_operators = []
@@ -167,7 +134,6 @@ def main():
 				selected_operators = checkClicked(operator_sprites_group, mouse_pos, 'OPREATOR')
 				selected_buttons = checkClicked(button_sprites_group, mouse_pos, 'BUTTON')
 		screen.fill(AZURE)
-		# 更新数字
 		if len(selected_numbers) == 2 and len(selected_operators) == 1:
 			noselected_numbers = []
 			for each in number_sprites_group:
@@ -192,7 +158,7 @@ def main():
 			selected_numbers = []
 			selected_operators = []
 			number_sprites_group = getNumberSpritesGroup(game24_gen.numbers_now)
-		# 精灵都画到screen上
+
 		for each in number_sprites_group:
 			each.draw(screen, pygame.mouse.get_pos())
 		for each in operator_sprites_group:
@@ -205,10 +171,9 @@ def main():
 				number_sprites_group = each.do(game24_gen, getNumberSpritesGroup, number_sprites_group, button_sprites_group)
 				selected_buttons = []
 			each.draw(screen, pygame.mouse.get_pos())
-		# 游戏胜利
+
 		if is_win:
 			showInfo('Congratulations', screen)
-		# 游戏失败
 		if not is_win and len(game24_gen.numbers_now) == 1:
 			showInfo('Game Over', screen)
 		pygame.display.flip()
